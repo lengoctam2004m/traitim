@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Love Suite – 4-in-1 Cute Website</title>
+  <style>
+    :root{
+      --pink:#ff8fb1; --rose:#ffd1dc; --peach:#ffe4ec; --lav:#b697ff; --mint:#b7f0e3; --ink:#2b2b2b; --bg:#fff7fb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--ink)}
+    .container{max-width:1080px;margin:0 auto;padding:24px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:20px 24px;position:sticky;top:0;background:linear-gradient(180deg, #fff, #fff0);backdrop-filter:saturate(150%) blur(10px);z-index:40;border-bottom:1px solid #ffe3ee}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo .heart{width:28px;height:28px;position:relative}
+    .logo .heart:before,.logo .heart:after{content:"";position:absolute;width:16px;height:24px;background:var(--pink);border-radius:12px 12px 0 0;transform:rotate(-45deg);left:6px;top:6px;box-shadow:0 4px 10px #ff8fb14d}
+    .logo .heart:after{left:-2px;transform:rotate(45deg)}
+    h1{font-size:clamp(18px,3.5vw,28px);margin:0}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px}
+    .tab-btn{border:0;padding:10px 14px;border-radius:999px;background:#fff;border:2px solid #ffe3ee;cursor:pointer;font-weight:600;transition:.2s}
+    .tab-btn[aria-selected="true"],.tab-btn:hover{background:var(--pink);color:#fff;border-color:var(--pink);box-shadow:0 6px 18px #ff8fb140}
+
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:900px){.two,.three{grid-template-columns:1fr}}
+
+    .card{background:#fff;border:1px solid #ffe3ee;border-radius:20px;padding:18px;box-shadow:0 10px 30px #ff8fb11f}
+    .card h3{margin:0 0 10px}
+    label{font-size:14px;font-weight:600;opacity:.9}
+    input,textarea,select{width:100%;padding:10px 12px;border:1.5px solid #ffd1dc;border-radius:12px;background:#fff}
+    textarea{min-height:110px;resize:vertical}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--pink);color:#fff;font-weight:700;padding:10px 14px;border-radius:12px;cursor:pointer;box-shadow:0 8px 24px #ff8fb145}
+    .btn.secondary{background:#fff;color:#ff2b6a;border:2px solid #ffd1dc}
+    .btn.ghost{background:transparent;color:#ff2b6a;border:0}
+    .muted{opacity:.7}
+    .pill{display:inline-block;background:var(--peach);padding:6px 10px;border-radius:999px;font-size:12px}
+
+    /* Heart rain */
+    .heart-rain{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:10}
+    .heart-rain span{position:absolute;top:-10vh;font-size:18px;animation:fall linear forwards;opacity:.9}
+    @keyframes fall{to{transform:translateY(120vh) rotate(360deg);opacity:0}}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:60}
+    .lightbox img{max-width:92vw;max-height:88vh;border-radius:16px;box-shadow:0 20px 60px #0008}
+
+    .counter{font-size:clamp(36px,8vw,72px);font-weight:900;letter-spacing:1px}
+
+    .album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+    .album-grid img{width:100%;height:160px;object-fit:cover;border-radius:14px;border:1px solid #ffd1dc;cursor:pointer}
+
+    .timeline{display:grid;gap:12px}
+    .note{background:var(--peach);border:1px dashed #ffc1d4;padding:12px;border-radius:14px}
+    .note h4{margin:0 0 6px}
+
+    .quiz q{font-weight:700}
+    .quiz .opt{display:block;margin:.4rem 0}
+  </style>
+</head>
+<body>
+  <div class="heart-rain" aria-hidden="true"></div>
+  <header>
+    <div class="logo"><span class="heart"></span><h1>Love Suite · 4-in-1 💖</h1></div>
+    <nav class="tabs" role="tablist" aria-label="Love Suite Tabs">
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="count">Đếm ngày yêu</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="diary">Nhật ký</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="album">Album</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="games">Mini game</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- COUNTDOWN TAB -->
+    <section id="tab-count" class="tab-panel" role="tabpanel">
+      <div class="grid two">
+        <div class="card">
+          <h3>📅 Cài đặt mốc yêu</h3>
+          <div class="grid two">
+            <div>
+              <label>Tên bạn A</label>
+              <input id="nameA" placeholder="VD: Ngọc" />
+            </div>
+            <div>
+              <label>Tên bạn B</label>
+              <input id="nameB" placeholder="VD: Tâm" />
+            </div>
+            <div>
+              <label>Ngày bắt đầu yêu</label>
+              <input id="startDate" type="date" />
+            </div>
+            <div>
+              <label>Nhạc nền (tuỳ chọn – URL)</label>
+              <input id="musicUrl" placeholder="Link mp3" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="btn" id="saveStart">Lưu & Hiển thị</button>
+            <button class="btn secondary" id="clearAll">Xoá dữ liệu</button>
+          </div>
+          <p class="muted" style="margin-top:8px">Dữ liệu sẽ lưu trong trình duyệt (localStorage).</p>
+        </div>
+        <div class="card">
+          <h3>💗 Ta đã bên nhau được</h3>
+          <div id="counter" class="counter">0 ngày</div>
+          <div id="sinceText" class="muted">—</div>
+          <div style="margin-top:12px">
+            <span class="pill" id="milestoneNext">Mốc sắp tới: —</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIARY TAB -->
+    <section id="tab-diary" class="tab-panel" role="tabpanel" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>📝 Viết nhật ký</h3>
+          <div class="grid two">
+            <div>
+              <label>Tiêu đề</label>
+              <input id="noteTitle" placeholder="Một ngày đáng nhớ" />
+            </div>
+            <div>
+              <label>Ngày</label>
+              <input id="noteDate" type="date" />
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <label>Nội dung</label>
+            <textarea id="noteBody" placeholder="Hôm nay chúng mình..."></textarea>
+          </div>
+          <div style="margin-top:8px">
+            <label>Ảnh (tuỳ chọn)</label>
+            <input id="noteImage" type="file" accept="image/*" />
+          </div>
+          <div style="margin-top:12px">
+            <button class="btn" id="addNote">Thêm vào nhật ký</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>📚 Dòng thời gian</h3>
+          <div id="timeline" class="timeline"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn secondary" id="exportDiary">Xuất sao lưu</button>
+            <label class="btn ghost" for="importDiaryFile">Nhập sao lưu</label>
+            <input id="importDiaryFile" type="file" accept="application/json" hidden />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALBUM TAB -->
+    <section id="tab-album" class="tab-panel" role="tabpanel" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>📸 Thêm ảnh</h3>
+          <input id="albumFiles" type="file" accept="image/*" multiple />
+          <div style="margin-top:12px">
+            <button class="btn" id="addToAlbum">Tải lên</button>
+            <button class="btn secondary" id="clearAlbum" style="margin-left:8px">Xoá album</button>
+          </div>
+          <p class="muted" style="margin-top:8px">Ảnh hiển thị từ file trên máy (không tải lên server). Thông tin ảnh lưu trong trình duyệt.</p>
+        </div>
+        <div class="card">
+          <h3>🧺 Album của chúng mình</h3>
+          <div id="albumGrid" class="album-grid"></div>
+        </div>
+      </div>
+      <div class="lightbox" id="lightbox"><img alt="preview" /><div style="position:fixed;top:20px;right:20px"><button id="closeLightbox" class="btn secondary">Đóng</button></div></div>
+    </section>
+
+    <!-- GAMES TAB -->
+    <section id="tab-games" class="tab-panel" role="tabpanel" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>💞 Love Calculator (vui thôi)</h3>
+          <div class="grid two">
+            <input id="lcA" placeholder="Tên A" />
+            <input id="lcB" placeholder="Tên B" />
+          </div>
+          <div style="margin-top:10px"><button class="btn" id="calcLC">Tính điểm yêu</button></div>
+          <div id="lcResult" style="font-weight:800;font-size:24px;margin-top:10px">—</div>
+          <div id="lcMsg" class="muted" style="margin-top:6px"></div>
+        </div>
+        <div class="card quiz">
+          <h3>🎀 Quiz mini</h3>
+          <p><q>Lần hẹn hò đầu là ngày nào?</q></p>
+          <label class="opt"><input type="radio" name="q1" value="a"> 12/03/2024</label>
+          <label class="opt"><input type="radio" name="q1" value="b"> 08/08/2024</label>
+          <label class="opt"><input type="radio" name="q1" value="c"> 14/02/2025</label>
+          <p style="margin-top:6px"><q>Món chung thích ăn?</q></p>
+          <label class="opt"><input type="radio" name="q2" value="a"> Lẩu</label>
+          <label class="opt"><input type="radio" name="q2" value="b"> Mì Ý</label>
+          <label class="opt"><input type="radio" name="q2" value="c"> Sushi</label>
+          <div style="margin-top:10px"><button class="btn" id="quizCheck">Chấm điểm</button> <span id="quizOut" class="pill" style="margin-left:8px">—</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <audio id="bgm" loop></audio>
+
+  <script>
+    // ---------- Utilities ----------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+    const store = {
+      get: (k, fallback=null)=>{try{return JSON.parse(localStorage.getItem(k)) ?? fallback}catch{return fallback}},
+      set: (k,v)=>localStorage.setItem(k, JSON.stringify(v)),
+      del: (k)=>localStorage.removeItem(k)
+    };
+
+    // ---------- Tabs ----------
+    $$(".tab-btn").forEach(btn=>btn.addEventListener('click',()=>{
+      $$(".tab-btn").forEach(b=>b.setAttribute('aria-selected', 'false'));
+      btn.setAttribute('aria-selected','true');
+      const id = btn.dataset.tab;
+      $$(".tab-panel").forEach(p=>p.hidden = true);
+      $(`#tab-${id}`).hidden = false;
+    }));
+
+    // ---------- Heart rain ----------
+    const heartContainer = document.querySelector('.heart-rain');
+    function spawnHeart(){
+      const s = document.createElement('span');
+      s.textContent = ['💗','💖','💘','💕','💝'][Math.floor(Math.random()*5)];
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDuration = (6+Math.random()*6)+'s';
+      s.style.fontSize = (16+Math.random()*18)+'px';
+      heartContainer.appendChild(s);
+      setTimeout(()=>s.remove(), 12000);
+    }
+    setInterval(spawnHeart, 600);
+
+    // ---------- Countdown ----------
+    const nameA = $('#nameA'), nameB = $('#nameB'), startDate = $('#startDate'), musicUrl = $('#musicUrl');
+    const counter = $('#counter'), sinceText = $('#sinceText'), milestoneNext = $('#milestoneNext');
+    const bgm = $('#bgm');
+
+    function renderCountdown(){
+      const data = store.get('love_start');
+      if(!data){counter.textContent='0 ngày'; sinceText.textContent='—'; milestoneNext.textContent='Mốc sắp tới: —'; return;}
+      nameA.value = data.nameA || '';
+      nameB.value = data.nameB || '';
+      startDate.value = data.date || '';
+      musicUrl.value = data.music || '';
+      if(data.music){ bgm.src = data.music; bgm.volume = 0.4; bgm.play().catch(()=>{}); }
+      if(!data.date) return;
+      const s = new Date(data.date);
+      const now = new Date();
+      const diff = Math.floor((now - s)/(1000*60*60*24));
+      counter.textContent = diff + ' ngày';
+      sinceText.textContent = `Từ ${s.toLocaleDateString()}`;
+      // milestones
+      const milestones = [100, 200, 300, 365, 500, 730, 1000, 1500, 2000];
+      const next = milestones.find(m => m > diff);
+      if(next){
+        const dayMs = 86400000;
+        const target = new Date(s.getTime() + next*dayMs);
+        const left = Math.ceil((target - now)/dayMs);
+        milestoneNext.textContent = `Mốc ${next} ngày: còn ${left} ngày ( ${target.toLocaleDateString()} )`;
+      } else {
+        milestoneNext.textContent = 'Hai bạn đã vượt mọi mốc! 🥳';
+      }
+    }
+
+    $('#saveStart').addEventListener('click',()=>{
+      store.set('love_start', {nameA:nameA.value.trim(), nameB:nameB.value.trim(), date:startDate.value, music:musicUrl.value.trim()});
+      renderCountdown();
+    });
+    $('#clearAll').addEventListener('click',()=>{
+      if(confirm('Xoá toàn bộ dữ liệu (đếm ngày, nhật ký, album)?')){
+        ['love_start','diary_notes','album_photos'].forEach(store.del);
+        renderCountdown(); renderTimeline(); renderAlbum();
+      }
+    });
+
+    // ---------- Diary ----------
+    const noteTitle = $('#noteTitle'), noteDate = $('#noteDate'), noteBody = $('#noteBody'), noteImage = $('#noteImage');
+    const timeline = $('#timeline');
+
+    function renderTimeline(){
+      const list = store.get('diary_notes', []);
+      timeline.innerHTML = '';
+      if(list.length===0){ timeline.innerHTML = '<p class="muted">Chưa có ghi chú nào ~ Viết điều đầu tiên đi nè! 💌</p>'; return; }
+      list.sort((a,b)=> new Date(b.date) - new Date(a.date));
+      for(const n of list){
+        const div = document.createElement('div');
+        div.className='note';
+        div.innerHTML = `
+          <h4>${n.title || 'Không tiêu đề'} — <span class="muted">${new Date(n.date).toLocaleDateString()}</span></h4>
+          ${n.img?`<img src="${n.img}" alt="note image" style="max-width:100%;border-radius:12px;border:1px solid #ffd1dc" />`:''}
+          <p style="margin:.5rem 0 0;white-space:pre-wrap">${n.body || ''}</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn secondary" data-action="del" data-id="${n.id}">Xoá</button>
+          </div>
+        `;
+        timeline.appendChild(div);
+      }
+      // attach delete
+      $$('button[data-action="del"]', timeline).forEach(b=>b.addEventListener('click',()=>{
+        const id = b.getAttribute('data-id');
+        const arr = store.get('diary_notes', []).filter(x=>x.id!==id);
+        store.set('diary_notes', arr); renderTimeline();
+      }));
+    }
+
+    $('#addNote').addEventListener('click', async ()=>{
+      const title = noteTitle.value.trim();
+      const date = noteDate.value || new Date().toISOString().slice(0,10);
+      const body = noteBody.value.trim();
+      let imgUrl = '';
+      if(noteImage.files && noteImage.files[0]){
+        imgUrl = URL.createObjectURL(noteImage.files[0]);
+      }
+      const note = {id: crypto.randomUUID(), title, date, body, img: imgUrl};
+      const arr = store.get('diary_notes', []); arr.push(note); store.set('diary_notes', arr);
+      noteTitle.value = noteBody.value = ''; noteImage.value='';
+      renderTimeline();
+    });
+
+    // Export / Import diary
+    $('#exportDiary').addEventListener('click',()=>{
+      const data = store.get('diary_notes', []);
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'love-diary-backup.json'; a.click();
+    });
+    $('#importDiaryFile').addEventListener('change', e=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = ()=>{ try{ const arr = JSON.parse(r.result); if(Array.isArray(arr)){ store.set('diary_notes', arr); renderTimeline(); } }catch{ alert('File không hợp lệ'); } };
+      r.readAsText(f);
+    });
+
+    // ---------- Album ----------
+    const albumFiles = $('#albumFiles'), albumGrid = $('#albumGrid');
+    function renderAlbum(){
+      const list = store.get('album_photos', []);
+      albumGrid.innerHTML='';
+      if(list.length===0){ albumGrid.innerHTML='<p class="muted">Album trống rồi ~ thêm vài tấm xinh xinh nhé 📷</p>'; return; }
+      for(const p of list){
+        const img = document.createElement('img');
+        img.src = p.url; img.alt = 'photo';
+        img.addEventListener('click',()=>{ $('#lightbox img').src = p.url; $('#lightbox').style.display='flex'; });
+        albumGrid.appendChild(img);
+      }
+    }
+    $('#closeLightbox').addEventListener('click',()=> $('#lightbox').style.display='none');
+
+    $('#addToAlbum').addEventListener('click', async ()=>{
+      if(!albumFiles.files || albumFiles.files.length===0) return alert('Chọn ảnh trước nhé');
+      const list = store.get('album_photos', []);
+      [...albumFiles.files].forEach(f=>{
+        const url = URL.createObjectURL(f);
+        list.push({id: crypto.randomUUID(), url});
+      });
+      store.set('album_photos', list); albumFiles.value=''; renderAlbum();
+    });
+    $('#clearAlbum').addEventListener('click',()=>{
+      if(confirm('Xoá toàn bộ album?')){ store.del('album_photos'); renderAlbum(); }
+    });
+
+    // ---------- Games ----------
+    function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return Math.abs(h); }
+    $('#calcLC').addEventListener('click',()=>{
+      const a = $('#lcA').value.trim(); const b = $('#lcB').value.trim();
+      if(!a||!b){ $('#lcResult').textContent='Điền đủ 2 tên nha'; return; }
+      const seed = hashStr((a+b).toLowerCase());
+      const score = 50 + (seed % 51); // 50..100
+      $('#lcResult').textContent = score + '% hợp nhau';
+      const msg = score>90? 'Trời sinh một cặp! 💍' : score>75? 'Ăn ý quá chừng 💘' : score>60? 'Cố gắng thấu hiểu nhau hơn nha 💞' : 'Điểm chỉ tham khảo thôi nè ~';
+      $('#lcMsg').textContent = msg;
+    });
+
+    $('#quizCheck').addEventListener('click',()=>{
+      const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+      const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+      let score = 0; if(q1==='b') score+=1; if(q2==='c') score+=1;
+      $('#quizOut').textContent = `Kết quả: ${score}/2`;
+    });
+
+    // ---------- Init ----------
+    function initDefaultDate(){ if(!store.get('love_start')){ const d = new Date(); d.setMonth(d.getMonth()-1); store.set('love_start', {nameA:'',nameB:'',date:d.toISOString().slice(0,10), music:''}); } }
+    initDefaultDate();
+    renderCountdown();
+    renderTimeline();
+    renderAlbum();
+  </script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Hộp Trung Thu QR</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #0b1c3a; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js";
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Ánh sáng chính
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333366, 1.2);
+  scene.add(hemiLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(10, 20, 10);
+  scene.add(dirLight);
+
+  // Spotlight cho QR (ban đầu tắt)
+  const spotLight = new THREE.SpotLight(0xffd700, 0); 
+  spotLight.position.set(0, 10, 10);
+  spotLight.angle = Math.PI / 6;
+  spotLight.penumbra = 0.3;
+  scene.add(spotLight);
+
+  // Group hộp
+  const giftBox = new THREE.Group();
+  scene.add(giftBox);
+
+  // Đáy hộp
+  const baseGeometry = new THREE.BoxGeometry(8, 2, 8);
+  const baseMaterial = new THREE.MeshPhongMaterial({ color: 0x153d6f });
+  const base = new THREE.Mesh(baseGeometry, baseMaterial);
+  giftBox.add(base);
+
+  // Nắp hộp
+  const lidGeometry = new THREE.BoxGeometry(8, 1, 8);
+  const lidMaterial = new THREE.MeshPhongMaterial({ color: 0x153d6f });
+  const lid = new THREE.Mesh(lidGeometry, lidMaterial);
+  lid.position.y = 1.5;
+  giftBox.add(lid);
+
+  // Họa tiết + mặt trăng trên nắp
+  const moonGeometry = new THREE.CircleGeometry(3, 64);
+  const moonMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+  const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+  moon.rotation.x = -Math.PI/2;
+  moon.position.set(0, 0.51, 0);
+  lid.add(moon);
+
+  const loader = new THREE.TextureLoader();
+  loader.load("hoavan.png", (texture) => {
+    const decoMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent:true });
+    const decoPlane = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), decoMaterial);
+    decoPlane.rotation.x = -Math.PI/2;
+    decoPlane.position.set(0, 0.52, 0);
+    lid.add(decoPlane);
+  });
+
+  // Bánh QR
+  let mooncake;
+  loader.load("moon_cake_qr.png", (texture) => {
+    mooncake = new THREE.Mesh(
+      new THREE.CylinderGeometry(2, 2, 1, 64),
+      new THREE.MeshPhongMaterial({ map: texture })
+    );
+    mooncake.rotation.x = Math.PI / 2;   // ban đầu nằm ngang, úp
+    mooncake.position.set(0, 0.6, 0);    // trong hộp
+    giftBox.add(mooncake);
+  });
+
+  // Nghiêng toàn hộp để nhìn đẹp
+  giftBox.rotation.x = -0.3;
+  giftBox.rotation.y = 0.4;
+
+  // Trạng thái mở nắp
+  let isOpening = false;
+  let isOpen = false;
+
+  // Click mở hộp
+  window.addEventListener("click", () => {
+    if (!isOpen && !isOpening) {
+      isOpening = true;
+    }
+  });
+
+  // Camera
+  camera.position.set(10, 8, 14);
+  camera.lookAt(0, 0, 0);
+
+  // Animation
+  function animate() {
+    requestAnimationFrame(animate);
+
+    if (isOpening && !isOpen && mooncake) {
+      // mở nắp
+      if (lid.rotation.x < Math.PI/2) {
+        lid.rotation.x += 0.02; 
+      }
+
+      // xoay bánh từ nằm ngang -> dựng lên
+      if (mooncake.rotation.x > 0) {
+        mooncake.rotation.x -= 0.02;
+      }
+
+      // khi hộp mở gần hết thì bật spotlight
+      if (lid.rotation.x > Math.PI/3) {
+        spotLight.intensity = Math.min(spotLight.intensity + 0.02, 1.5);
+      }
+
+      // kết thúc
+      if (lid.rotation.x >= Math.PI/2 && mooncake.rotation.x <= 0.05) {
+        isOpen = true;
+        isOpening = false;
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Responsive
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+</body>
+</html>
+
